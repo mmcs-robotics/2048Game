@@ -43,7 +43,7 @@
             this.borderTrackBar = new System.Windows.Forms.TrackBar();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
+            this.ticksLabel = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -227,14 +227,14 @@
             this.label7.TabIndex = 24;
             this.label7.Text = "Статус:";
             // 
-            // label10
+            // ticksLabel
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(360, 652);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(41, 13);
-            this.label10.TabIndex = 30;
-            this.label10.Text = "label10";
+            this.ticksLabel.AutoSize = true;
+            this.ticksLabel.Location = new System.Drawing.Point(360, 652);
+            this.ticksLabel.Name = "ticksLabel";
+            this.ticksLabel.Size = new System.Drawing.Size(131, 13);
+            this.ticksLabel.TabIndex = 30;
+            this.ticksLabel.Text = "Ticks for frame processing";
             // 
             // pictureBox2
             // 
@@ -432,7 +432,7 @@
             this.Controls.Add(this.controlPanel);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.label10);
+            this.Controls.Add(this.ticksLabel);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.panel2);
@@ -475,7 +475,7 @@
         private System.Windows.Forms.TrackBar borderTrackBar;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label ticksLabel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.PictureBox pictureBox2;

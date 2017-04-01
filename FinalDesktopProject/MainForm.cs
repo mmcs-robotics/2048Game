@@ -91,7 +91,7 @@ namespace AForge.WindowsForms
                 return;
             }
 
-            label10.Text = "Тики : " + sw.Elapsed.ToString();
+            ticksLabel.Text = "Тики : " + sw.Elapsed.ToString();
             
             //  Выводим в правую панель фрагменты изображений. Они должны содержать только цифры в чёрно-белом формате
             for (int r = 0; r < 4; ++r)
@@ -255,6 +255,7 @@ namespace AForge.WindowsForms
                 videoSource.Start();
                 btnStart.Text = "Стоп";
                 controlPanel.Enabled = true;
+                cmbVideoSource.Enabled = false;
             }
             else
             {
@@ -266,6 +267,7 @@ namespace AForge.WindowsForms
                 videoSource = null;
                 btnStart.Text = "Старт";
                 controlPanel.Enabled = false;
+                cmbVideoSource.Enabled = true;
             }
         }
 
