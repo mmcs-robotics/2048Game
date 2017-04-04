@@ -154,6 +154,24 @@ state::state(const state & other) {
     totalObjects++;
 }
 
+state::state(const char * data, int length)
+{
+	if (length > cellCount) length = cellCount;
+
+	for (size_t i = 0; i < length; ++i)
+		field[i] = data[i];
+
+	totalObjects++;
+}
+
+//  Экспорт поля в буфер
+void state::exportField(char * data, int length) const
+{
+	if (length<cellCount) throw std::invalid_argument("state::exportField receive buffer too small");
+	for (size_t i = 0; i < cellCount; ++i)
+		data[i] = field[i];
+}
+
 const state & state::operator=(const state & other) {
     copyField(field, other.field);
     return *this;

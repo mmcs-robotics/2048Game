@@ -62,6 +62,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.scoreLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -412,6 +413,7 @@
             this.button2.TabIndex = 25;
             this.button2.Text = "Играть";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -424,11 +426,22 @@
             this.button1.Text = "Распознать";
             this.button1.UseVisualStyleBackColor = true;
             // 
+            // scoreLabel
+            // 
+            this.scoreLabel.AutoSize = true;
+            this.scoreLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.scoreLabel.Location = new System.Drawing.Point(11, 641);
+            this.scoreLabel.Name = "scoreLabel";
+            this.scoreLabel.Size = new System.Drawing.Size(60, 24);
+            this.scoreLabel.TabIndex = 34;
+            this.scoreLabel.Text = "Очки:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(973, 739);
+            this.Controls.Add(this.scoreLabel);
             this.Controls.Add(this.controlPanel);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.pictureBox2);
@@ -496,6 +509,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label scoreLabel;
     }
 }
 

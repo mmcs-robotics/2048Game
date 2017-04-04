@@ -51,6 +51,12 @@ public:
     //  Копирующий конструктор - необходимости в нём особой нет, объект POD
     state(const state & other);
 
+	//  Конструктор из буфера
+	state(const char * data, int length);
+
+	//  Экспорт поля в буфер
+	void exportField(char *data, int length) const;
+
     //  Оператор присваивания - аналогично,
     const state & operator=(const state & other);
 

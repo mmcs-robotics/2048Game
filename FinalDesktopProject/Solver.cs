@@ -11,7 +11,8 @@ namespace AForge.WindowsForms
     public class Helper
     {
         [DllImport("CppDll.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)]
-        public static extern int solveState(byte[] buff, int buffSize, int depth);
+        //public static extern int solveState(byte[] buff, int buffSize, int depth);
+        unsafe public static extern int solveState(IntPtr buff, int buffSize, int depth, IntPtr score);
     }
 
     class Solver
@@ -20,13 +21,17 @@ namespace AForge.WindowsForms
         public int suggestedMove = 0;
 
         public byte[] buffer;
+        public byte[] newBuffer;
+
         public int bufferSize;
+        public int score;
 
         private int searchDepth;
 
         public Solver()
         {
             buffer = new byte[16];
+            newBuffer = new byte[16];
             bufferSize = 16;
         }
         
@@ -51,11 +56,40 @@ namespace AForge.WindowsForms
 
         private void doWork()
         {
-            suggestedMove = Helper.solveState(buffer, bufferSize, searchDepth);
+            unsafe
+            {
+                // Инициализируем массив в неуправляемой памяти
+                int size = Marshal.SizeOf(buffer[0]) * bufferSize;
+                IntPtr ptrToBuffer = Marshal.AllocHGlobal(size);
+
+                //  Выделяем память под возвращение результата
+                IntPtr newScore = Marshal.AllocHGlobal(Marshal.SizeOf(score));
+
+                try
+                {
+                    // Копируем массив в неуправляемую память
+                    Marshal.Copy(buffer, 0, ptrToBuffer, bufferSize);
+
+                    suggestedMove = Helper.solveState(ptrToBuffer, bufferSize, searchDepth, newScore);
+
+                    //  Обратное копирование - теперь в новый буфер, с сохранением
+                    Marshal.Copy(ptrToBuffer, newBuffer, 0, newBuffer.Length);
+
+                    //  Результат сохраняем
+                    score = (int)Marshal.PtrToStructure(newScore, typeof(int));
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(ptrToBuffer);
+                    Marshal.FreeHGlobal(newScore);
+                }
+            }
             moveReady = true;
         }
 
         public bool workDone() { return moveReady; }
+
+        public int getScore() { return score; }
 
     }
 }

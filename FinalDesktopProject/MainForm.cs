@@ -68,6 +68,11 @@ namespace AForge.WindowsForms
         private PictureBox[,] pics;
         
         /// <summary>
+        /// Текущий счёт игры
+        /// </summary>
+        int score = 0;
+        
+        /// <summary>
         /// Таймер для измерения производительности (времени на обработку кадра)
         /// </summary>
         private Stopwatch sw = new Stopwatch();
@@ -130,6 +135,9 @@ namespace AForge.WindowsForms
                     //    это плохо, строго говоря - строчки эти постоянно переписывать в форму, ну да ладно
                     if(RobotPlaying && rbt!=null && rbt.Ready())
                     {
+                        score += sage.getScore();
+                        scoreLabel.Text = "Счёт : " + score.ToString();
+
                         int speed = int.Parse(speedBox.Text);
                         currentState = Stage.Moving;
                         switch (sage.suggestedMove)
