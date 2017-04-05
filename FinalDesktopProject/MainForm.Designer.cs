@@ -48,10 +48,10 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.btnUp = new System.Windows.Forms.Button();
+            this.btnDown = new System.Windows.Forms.Button();
             this.btnRight = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
+            this.btnReset = new System.Windows.Forms.Button();
             this.btnLeft = new System.Windows.Forms.Button();
             this.speedBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -61,8 +61,9 @@
             this.controlPanel = new System.Windows.Forms.Panel();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.scoreLabel = new System.Windows.Forms.Label();
+            this.movesLabel = new System.Windows.Forms.Label();
+            this.errorsLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -78,7 +79,7 @@
             // 
             this.cmbVideoSource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cmbVideoSource.FormattingEnabled = true;
-            this.cmbVideoSource.Location = new System.Drawing.Point(17, 693);
+            this.cmbVideoSource.Location = new System.Drawing.Point(17, 704);
             this.cmbVideoSource.Name = "cmbVideoSource";
             this.cmbVideoSource.Size = new System.Drawing.Size(219, 21);
             this.cmbVideoSource.TabIndex = 1;
@@ -87,7 +88,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 677);
+            this.label1.Location = new System.Drawing.Point(14, 688);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(83, 13);
             this.label1.TabIndex = 2;
@@ -97,7 +98,7 @@
             // 
             this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnStart.Location = new System.Drawing.Point(242, 686);
+            this.btnStart.Location = new System.Drawing.Point(242, 697);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(125, 30);
             this.btnStart.TabIndex = 3;
@@ -143,7 +144,7 @@
             this.panel2.Controls.Add(this.borderTrackBar);
             this.panel2.Location = new System.Drawing.Point(12, 529);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(465, 79);
+            this.panel2.Size = new System.Drawing.Size(495, 79);
             this.panel2.TabIndex = 18;
             // 
             // label2
@@ -165,6 +166,7 @@
             this.trackBar1.TabIndex = 22;
             this.trackBar1.TickFrequency = 25;
             this.trackBar1.Value = 120;
+            this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
             // 
             // label4
             // 
@@ -231,7 +233,7 @@
             // ticksLabel
             // 
             this.ticksLabel.AutoSize = true;
-            this.ticksLabel.Location = new System.Drawing.Point(360, 652);
+            this.ticksLabel.Location = new System.Drawing.Point(380, 708);
             this.ticksLabel.Name = "ticksLabel";
             this.ticksLabel.Size = new System.Drawing.Size(131, 13);
             this.ticksLabel.TabIndex = 30;
@@ -251,10 +253,10 @@
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel3.Controls.Add(this.textBox1);
             this.panel3.Controls.Add(this.label11);
-            this.panel3.Controls.Add(this.button5);
-            this.panel3.Controls.Add(this.button4);
+            this.panel3.Controls.Add(this.btnUp);
+            this.panel3.Controls.Add(this.btnDown);
             this.panel3.Controls.Add(this.btnRight);
-            this.panel3.Controls.Add(this.button7);
+            this.panel3.Controls.Add(this.btnReset);
             this.panel3.Controls.Add(this.btnLeft);
             this.panel3.Controls.Add(this.speedBox);
             this.panel3.Controls.Add(this.label9);
@@ -283,28 +285,31 @@
             this.label11.TabIndex = 27;
             this.label11.Text = "Задержка :";
             // 
-            // button5
+            // btnUp
             // 
-            this.button5.Location = new System.Drawing.Point(135, 85);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 30);
-            this.button5.TabIndex = 26;
-            this.button5.Text = "Вверх";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click_1);
+            this.btnUp.Enabled = false;
+            this.btnUp.Location = new System.Drawing.Point(135, 85);
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Size = new System.Drawing.Size(75, 30);
+            this.btnUp.TabIndex = 26;
+            this.btnUp.Text = "Вверх";
+            this.btnUp.UseVisualStyleBackColor = true;
+            this.btnUp.Click += new System.EventHandler(this.button5_Click_1);
             // 
-            // button4
+            // btnDown
             // 
-            this.button4.Location = new System.Drawing.Point(135, 121);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 30);
-            this.button4.TabIndex = 25;
-            this.button4.Text = "Вниз";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click_1);
+            this.btnDown.Enabled = false;
+            this.btnDown.Location = new System.Drawing.Point(135, 121);
+            this.btnDown.Name = "btnDown";
+            this.btnDown.Size = new System.Drawing.Size(75, 30);
+            this.btnDown.TabIndex = 25;
+            this.btnDown.Text = "Вниз";
+            this.btnDown.UseVisualStyleBackColor = true;
+            this.btnDown.Click += new System.EventHandler(this.button4_Click_1);
             // 
             // btnRight
             // 
+            this.btnRight.Enabled = false;
             this.btnRight.Location = new System.Drawing.Point(135, 161);
             this.btnRight.Name = "btnRight";
             this.btnRight.Size = new System.Drawing.Size(75, 30);
@@ -313,18 +318,20 @@
             this.btnRight.UseVisualStyleBackColor = true;
             this.btnRight.Click += new System.EventHandler(this.btnRight_Click);
             // 
-            // button7
+            // btnReset
             // 
-            this.button7.Location = new System.Drawing.Point(128, 36);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(100, 30);
-            this.button7.TabIndex = 24;
-            this.button7.Text = "Сбросить";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
+            this.btnReset.Enabled = false;
+            this.btnReset.Location = new System.Drawing.Point(128, 36);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(100, 30);
+            this.btnReset.TabIndex = 24;
+            this.btnReset.Text = "Сбросить";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.button7_Click);
             // 
             // btnLeft
             // 
+            this.btnLeft.Enabled = false;
             this.btnLeft.Location = new System.Drawing.Point(54, 161);
             this.btnLeft.Name = "btnLeft";
             this.btnLeft.Size = new System.Drawing.Size(75, 30);
@@ -372,6 +379,7 @@
             // 
             // btnDisconnect
             // 
+            this.btnDisconnect.Enabled = false;
             this.btnDisconnect.Location = new System.Drawing.Point(22, 36);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(100, 30);
@@ -385,7 +393,6 @@
             this.controlPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.controlPanel.Controls.Add(this.button3);
             this.controlPanel.Controls.Add(this.button2);
-            this.controlPanel.Controls.Add(this.button1);
             this.controlPanel.Enabled = false;
             this.controlPanel.Location = new System.Drawing.Point(520, 672);
             this.controlPanel.Name = "controlPanel";
@@ -396,12 +403,13 @@
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button3.Location = new System.Drawing.Point(21, 13);
+            this.button3.Location = new System.Drawing.Point(166, 13);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(125, 30);
             this.button3.TabIndex = 26;
             this.button3.Text = "Решать";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -415,17 +423,6 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.Location = new System.Drawing.Point(159, 13);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(125, 30);
-            this.button1.TabIndex = 24;
-            this.button1.Text = "Распознать";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // scoreLabel
             // 
             this.scoreLabel.AutoSize = true;
@@ -436,11 +433,33 @@
             this.scoreLabel.TabIndex = 34;
             this.scoreLabel.Text = "Очки:";
             // 
+            // movesLabel
+            // 
+            this.movesLabel.AutoSize = true;
+            this.movesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.movesLabel.Location = new System.Drawing.Point(201, 641);
+            this.movesLabel.Name = "movesLabel";
+            this.movesLabel.Size = new System.Drawing.Size(63, 24);
+            this.movesLabel.TabIndex = 35;
+            this.movesLabel.Text = "Ходы:";
+            // 
+            // errorsLabel
+            // 
+            this.errorsLabel.AutoSize = true;
+            this.errorsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.errorsLabel.Location = new System.Drawing.Point(380, 641);
+            this.errorsLabel.Name = "errorsLabel";
+            this.errorsLabel.Size = new System.Drawing.Size(86, 24);
+            this.errorsLabel.TabIndex = 36;
+            this.errorsLabel.Text = "Ошибки:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(973, 739);
+            this.ClientSize = new System.Drawing.Size(973, 742);
+            this.Controls.Add(this.errorsLabel);
+            this.Controls.Add(this.movesLabel);
             this.Controls.Add(this.scoreLabel);
             this.Controls.Add(this.controlPanel);
             this.Controls.Add(this.panel3);
@@ -455,9 +474,11 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbVideoSource);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.KeyPreview = true;
             this.Name = "MainForm";
             this.Text = "2048";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel2.ResumeLayout(false);
@@ -493,10 +514,10 @@
         private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btnUp;
+        private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.Button btnRight;
-        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Button btnLeft;
         private System.Windows.Forms.TextBox speedBox;
         private System.Windows.Forms.Label label9;
@@ -508,8 +529,9 @@
         private System.Windows.Forms.Panel controlPanel;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label scoreLabel;
+        private System.Windows.Forms.Label movesLabel;
+        private System.Windows.Forms.Label errorsLabel;
     }
 }
 

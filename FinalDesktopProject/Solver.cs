@@ -21,7 +21,6 @@ namespace AForge.WindowsForms
         public int suggestedMove = 0;
 
         public byte[] buffer;
-        public byte[] newBuffer;
 
         public int bufferSize;
         public int score;
@@ -31,7 +30,6 @@ namespace AForge.WindowsForms
         public Solver()
         {
             buffer = new byte[16];
-            newBuffer = new byte[16];
             bufferSize = 16;
         }
         
@@ -73,7 +71,7 @@ namespace AForge.WindowsForms
                     suggestedMove = Helper.solveState(ptrToBuffer, bufferSize, searchDepth, newScore);
 
                     //  Обратное копирование - теперь в новый буфер, с сохранением
-                    Marshal.Copy(ptrToBuffer, newBuffer, 0, newBuffer.Length);
+                    Marshal.Copy(ptrToBuffer, buffer, 0, bufferSize);
 
                     //  Результат сохраняем
                     score = (int)Marshal.PtrToStructure(newScore, typeof(int));

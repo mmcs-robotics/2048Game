@@ -71,7 +71,12 @@ namespace AForge.WindowsForms
         /// Текущий счёт игры
         /// </summary>
         int score = 0;
-        
+
+        /// <summary>
+        /// Текущее число ходов
+        /// </summary>
+        int moves = 0;
+
         /// <summary>
         /// Таймер для измерения производительности (времени на обработку кадра)
         /// </summary>
@@ -117,6 +122,7 @@ namespace AForge.WindowsForms
                 label7.Text = "Статус: поиск хода";
                 if (sage.workDone())
                 {
+                    
                     //  Позиция обработана, ход найден
                     currentState = Stage.Moving;
 
@@ -138,6 +144,11 @@ namespace AForge.WindowsForms
                         score += sage.getScore();
                         scoreLabel.Text = "Счёт : " + score.ToString();
 
+                        moves++;
+                        movesLabel.Text = "Ходы : " + moves.ToString();
+
+                        processor.setExpectedState(sage.buffer);
+
                         int speed = int.Parse(speedBox.Text);
                         currentState = Stage.Moving;
                         switch (sage.suggestedMove)
@@ -147,6 +158,7 @@ namespace AForge.WindowsForms
                             case 3: rbt.RotateRight(LegoRobot.mtr.MotorA, speed); break;
                             case 4: rbt.RotateRight(LegoRobot.mtr.MotorB, speed); break;
                         }
+
                     }
 
                 }
@@ -211,17 +223,6 @@ namespace AForge.WindowsForms
 
         private void Form1_Closing(object sender, CancelEventArgs e)
         {
-            updateTmr.Dispose();
-            updateTmr = null;
-
-            //  Как-то надо ещё робота подождать, если он работает
-
-            if (videoSource != null && videoSource.IsRunning)
-            {
-                videoSource.SignalToStop();
-            }
-
-            //  Тут ошибка вылетает! Надо дождаться все ассоциированные процессы
 
         }
 
@@ -229,7 +230,6 @@ namespace AForge.WindowsForms
         {
             //  Время засекаем
             sw.Restart();
-            //sw.Start();
 
             //  Отправляем изображение на обработку, и выводим оригинал (с раскраской) и разрезанные изображения
 
@@ -240,7 +240,7 @@ namespace AForge.WindowsForms
                 justShowFrame = false;
             }
 
-
+            errorsLabel.ForeColor = Color.Black;
             processor.ProcessImage((Bitmap)eventArgs.Frame.Clone(), justShowFrame);
 
             pictureBox1.Image = processor.original;
@@ -248,6 +248,16 @@ namespace AForge.WindowsForms
             sw.Stop();
 
             if (justShowFrame) return;
+
+            if(processor.stopByErrors)
+            {
+                //  О, тут всё плохо - что-то случилось и сломалось
+                Debug.WriteLine("Stopped by fatal errors level");
+                errorsLabel.Text = "Остановка!";
+                errorsLabel.ForeColor = Color.Red;
+                currentState = Stage.Idle;
+                return;
+            }
 
             currentState = Stage.Thinking;
             sage.solveState(processor.currentDeskState, 16, 7);
@@ -277,10 +287,6 @@ namespace AForge.WindowsForms
                 controlPanel.Enabled = false;
                 cmbVideoSource.Enabled = true;
             }
-        }
-
-        private void btnStop_Click(object sender, EventArgs e)
-        {
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
@@ -318,7 +324,7 @@ namespace AForge.WindowsForms
                 //  Выключаем игру
                 RobotPlaying = true;
                 button2.Text = "Стоп-кран";
-                currentState = Stage.WaitingForFrame;
+                currentState = Stage.Idle;
             }
         }
 
@@ -340,9 +346,15 @@ namespace AForge.WindowsForms
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             rbt.Disconnect();
+
             if (updateTmr != null)
+                updateTmr.Dispose();
+
+            //  Как-то надо ещё робота подождать, если он работает
+
+            if (videoSource != null && videoSource.IsRunning)
             {
-                updateTmr.Change(Timeout.Infinite, Timeout.Infinite);
+                videoSource.SignalToStop();
             }
         }
 
@@ -374,11 +386,25 @@ namespace AForge.WindowsForms
         private void btnDisconnect_Click(object sender, EventArgs e)
         {
             rbt.Disconnect();
+            btnConnect.Enabled = true;
+            btnDisconnect.Enabled = false;
+            btnReset.Enabled = false;
+            btnUp.Enabled = false;
+            btnDown.Enabled = false;
+            btnLeft.Enabled = false;
+            btnRight.Enabled = false;
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
             rbt.Connect(comPortsNames.Text);
+            btnConnect.Enabled = false;
+            btnDisconnect.Enabled = true;
+            btnReset.Enabled = true;
+            btnUp.Enabled = true;
+            btnDown.Enabled = true;
+            btnLeft.Enabled = true;
+            btnRight.Enabled = true;
         }
 
         private void speedBox_TextChanged(object sender, EventArgs e)
@@ -390,6 +416,20 @@ namespace AForge.WindowsForms
             if (newInterval < 50 || newInterval > 7000) return;
             //  Устанавливаем интервал неактивности робота
             rbt.setTimerInterval(newInterval);
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            //if (!e.Shift) return;
+            switch(e.KeyCode)
+            {
+                case Keys.W: processor.settings.decTop(); Debug.WriteLine("Up!"); break;
+                case Keys.S: processor.settings.incTop(); Debug.WriteLine("Down!"); break;
+                case Keys.A: processor.settings.decLeft(); Debug.WriteLine("Left!"); break;
+                case Keys.D: processor.settings.incLeft(); Debug.WriteLine("Right!"); break;
+                case Keys.Q : processor.settings.border++; Debug.WriteLine("Plus!"); break;
+                case Keys.E: processor.settings.border--; Debug.WriteLine("Minus!"); break;
+            }
         }
     }
 }

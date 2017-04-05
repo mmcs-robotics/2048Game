@@ -10,16 +10,42 @@ namespace AForge.WindowsForms
 {
     class Settings
     {
+        private int _border = 20;
+        public int border
+        {
+            get
+            {
+                return _border;
+            }
+            set
+            {
+                if ((value > 0) && (value < height / 3))
+                {
+                    _border = value;
+                    if (top > 2 * _border) top = 2 * _border;
+                    if (left > 2 * _border) left = 2 * _border;
+                }
+            }
+        }
+
         public int width = 640;
         public int height = 640;
-        public int border = 40;
+
+
         public int margin = 10;
+        public int top = 40;
+        public int left = 40;
 
         /// <summary>
         /// Порог при отсечении по цвету 
         /// </summary>
         public byte threshold = 120;
         public float differenceLim = 0.15f;
+
+        public void incTop() { if (top < 2 * _border) ++top; }
+        public void decTop() { if (top > 0) --top; }
+        public void incLeft() { if (left < 2 * _border) ++left; }
+        public void decLeft() { if (left > 0) --left; }
     }
 
     class MagicEye
@@ -51,8 +77,19 @@ namespace AForge.WindowsForms
         public Settings settings = new Settings();
 
         public Dictionary<int, int> powers = new Dictionary<int, int>();
-
+        
+        /// <summary>
+        /// Текущее состояние поля
+        /// </summary>
         public byte[] currentDeskState = new byte[16];
+        
+        /// <summary>
+        /// Состояние поля на предыдущем шаге
+        /// </summary>
+        public byte[] expectedDeskState = null;
+
+        public int errorCount = 0;
+        public bool stopByErrors = false;
 
         /// <summary>
         /// Здесь надо инициализировать изображения
@@ -89,6 +126,46 @@ namespace AForge.WindowsForms
         }
         
         /// <summary>
+        /// Запомнить ожидаемое после хода состояние
+        /// </summary>
+        /// <param name="buffer"></param>
+        public void setExpectedState(byte[] buffer)
+        {
+            expectedDeskState = buffer;
+        }
+        
+        /// <summary>
+        /// Исправление текущего состояния на основе предсказанного
+        /// </summary>
+        private void correctState()
+        {
+            int iterationErrorCount = 0;
+            int lethalErrors = 0;
+
+            if (expectedDeskState == null) return;
+            //  Пытаемся исправить ошибки распознавания на основе предсказанного состояния
+            for (int i = 0; i < 16; ++i)
+                //  Считаем ошибочки
+                if (currentDeskState[i] != expectedDeskState[i])
+                {
+                    iterationErrorCount++;
+
+                    //  Для плиток со значением больше 4 выбираем предсказанное значение
+                    if (expectedDeskState[i] > 2)
+                        currentDeskState[i] = expectedDeskState[i];
+                    else
+                        lethalErrors++;
+                }
+
+            if(iterationErrorCount>2)
+            {
+                Debug.WriteLine("Too many errors on one iteration : " + iterationErrorCount.ToString());
+            }
+            errorCount += iterationErrorCount;
+            if (lethalErrors > 1) stopByErrors = true;
+        }
+
+        /// <summary>
         /// Выводим распознанные значения поверх исходного изображения
         /// </summary>
         /// <param name="g"></param>
@@ -117,7 +194,7 @@ namespace AForge.WindowsForms
             if (side < 4 * settings.border) settings.border = side / 4;
             side -= 2 * settings.border;
 
-            Rectangle cropRect = new Rectangle((bitmap.Width - bitmap.Height) / 2 + settings.border, settings.border, side, side);
+            Rectangle cropRect = new Rectangle((bitmap.Width - bitmap.Height) / 2 + settings.left, settings.top, side, side);
 
             original = new Bitmap(cropRect.Width, cropRect.Height);
             
@@ -150,7 +227,9 @@ namespace AForge.WindowsForms
             //  Если распознавание не планируем – просто выход
             if (justShow) return;
 
-            //  Обнуляем state
+            stopByErrors = false;
+
+            //  Обнуляем текущее состояние
             for (int i = 0; i < 16; ++i)
                 currentDeskState[i] = 0;
 
@@ -170,6 +249,10 @@ namespace AForge.WindowsForms
                     //  И выполняем сопоставление
                     processSample(r, c);
                 }
+            
+            //  Исправляем ошибки
+            correctState();
+            //  Рисуем полученный результат
             DrawNumbersOnOriginalBitmap(g,blockSide);
         }
 
