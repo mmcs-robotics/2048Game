@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using AForge.Video;
 using AForge.Video.DirectShow;
 using System.Diagnostics;
+using System.IO.Ports;
 
 namespace AForge.WindowsForms
 {
@@ -122,7 +123,15 @@ namespace AForge.WindowsForms
                 label7.Text = "Статус: поиск хода";
                 if (sage.workDone())
                 {
-                    
+                    if(processor.stopByErrors)
+                    {
+                        errorsLabel.Text = "Остановка!";
+                        errorsLabel.ForeColor = Color.Red;
+                        if (RobotPlaying)
+                            button2_Click(null, null);
+                        currentState = Stage.Idle;
+                        return;
+                    }
                     //  Позиция обработана, ход найден
                     currentState = Stage.Moving;
 
@@ -147,6 +156,9 @@ namespace AForge.WindowsForms
                         moves++;
                         movesLabel.Text = "Ходы : " + moves.ToString();
 
+                        errorsLabel.Text = "Ошибки : " + processor.errorCount.ToString();
+                        
+
                         processor.setExpectedState(sage.buffer);
 
                         int speed = int.Parse(speedBox.Text);
@@ -158,7 +170,6 @@ namespace AForge.WindowsForms
                             case 3: rbt.RotateRight(LegoRobot.mtr.MotorA, speed); break;
                             case 4: rbt.RotateRight(LegoRobot.mtr.MotorB, speed); break;
                         }
-
                     }
 
                 }
@@ -201,8 +212,14 @@ namespace AForge.WindowsForms
             {
                 MessageBox.Show("А нет у вас камеры!", "Ошибочка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            // Закрыть по завершению
-            this.Closing += Form1_Closing;
+
+            // Список портов получаем
+            string[] ports = SerialPort.GetPortNames();
+
+            // И в поле выбора
+            foreach (string port in ports)
+                comPortsNames.Items.Add(port);
+
 
             pics = new PictureBox[4, 4];
             for(int r=0;r<4;++r)
@@ -219,11 +236,6 @@ namespace AForge.WindowsForms
             
             updateTmr = new System.Threading.Timer(Tick, evnt, 500, 100);
             rbt.SetOdometer(pictureBox2);
-        }
-
-        private void Form1_Closing(object sender, CancelEventArgs e)
-        {
-
         }
 
         private void video_NewFrame(object sender,NewFrameEventArgs eventArgs)
@@ -253,8 +265,8 @@ namespace AForge.WindowsForms
             {
                 //  О, тут всё плохо - что-то случилось и сломалось
                 Debug.WriteLine("Stopped by fatal errors level");
-                errorsLabel.Text = "Остановка!";
-                errorsLabel.ForeColor = Color.Red;
+                //errorsLabel.Text = "Остановка!";
+                //errorsLabel.ForeColor = Color.Red;
                 currentState = Stage.Idle;
                 return;
             }
@@ -317,14 +329,15 @@ namespace AForge.WindowsForms
                 //  Выключаем игру
                 RobotPlaying = false;
                 button2.Text = "Играть";
-                currentState = Stage.WaitingForFrame;
+                currentState = Stage.Idle;
             }
             else
             {
-                //  Выключаем игру
+                //  Включаем игру
+                processor.expectedDeskState = null;
                 RobotPlaying = true;
                 button2.Text = "Стоп-кран";
-                currentState = Stage.Idle;
+                currentState = Stage.WaitingForFrame;
             }
         }
 

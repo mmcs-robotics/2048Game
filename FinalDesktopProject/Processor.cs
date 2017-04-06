@@ -143,13 +143,24 @@ namespace AForge.WindowsForms
             int lethalErrors = 0;
 
             if (expectedDeskState == null) return;
+            //  Считаем количество ошибок на основе предсказанного состояния
+            for (int i = 0; i < 16; ++i)
+            {
+                if (currentDeskState[i] != expectedDeskState[i])
+                    iterationErrorCount++;
+            }
+            
+            //  Если ошибок больше двух - что-то пошло не так
+            if (iterationErrorCount > 3)
+            {
+                Debug.WriteLine("Too many errors on one iteration : " + iterationErrorCount.ToString());
+                return;
+            }
+
             //  Пытаемся исправить ошибки распознавания на основе предсказанного состояния
             for (int i = 0; i < 16; ++i)
-                //  Считаем ошибочки
                 if (currentDeskState[i] != expectedDeskState[i])
                 {
-                    iterationErrorCount++;
-
                     //  Для плиток со значением больше 4 выбираем предсказанное значение
                     if (expectedDeskState[i] > 2)
                         currentDeskState[i] = expectedDeskState[i];
@@ -157,11 +168,8 @@ namespace AForge.WindowsForms
                         lethalErrors++;
                 }
 
-            if(iterationErrorCount>2)
-            {
-                Debug.WriteLine("Too many errors on one iteration : " + iterationErrorCount.ToString());
-            }
-            errorCount += iterationErrorCount;
+            if(iterationErrorCount>1)
+                errorCount += iterationErrorCount-1;
             if (lethalErrors > 1) stopByErrors = true;
         }
 
@@ -184,6 +192,8 @@ namespace AForge.WindowsForms
 
         public void ProcessImage(Bitmap bitmap, bool justShow)
         {
+            stopByErrors = false;
+
             //  «Распиливаем» изображение на 16 фрагментов - по отдельной плитке каждый
 
             //  Минимальная сторона изображения (обычно это высота)
